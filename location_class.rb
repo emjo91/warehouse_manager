@@ -1,35 +1,46 @@
 require_relative 'module.rb'
-
+require_relative 'class_module.rb'
 
 # Class: Location
 #
 # Creates different locations and gets information about them.
 #
 # Attributes:
-# @name          - 
-# @id            - 
-# @description   - 
+# @name          - String: Name of location  
+# @id            - Integer: Product ID, primary key for locations table
+# @description   - String: Description of location
 #
 # attr_reader :id
+# attr_accessor :description, :name
 #
 # Public Methods:
-# #insert
 # #self.select_all_locations
-# #
-# #update_location
-# #update_name
-# #update_description
-# #delete_location
-# #
-# #
+# 
 # Private Methods:
-# #save
 # #initialize
 
 class Location
+  include WarehouseManagerIM
+  extend WarehouseManagerCM
   
   attr_reader :id
   attr_accessor :description, :name
+  
+  # Private: initialize
+  # Starts and then plays the game with the provided players.
+  #
+  # Parameters:
+  # options - Hash
+  #           - @name        - Instance variable representing the location name
+  #           - @description - Instance variable representing the location info 
+  #           - @id          - Instance variable representing the location ID within the table (primary key)
+  #
+  # Returns:
+  # Nil
+  #
+  # State Changes:
+  # Sets instance variables @name, @description, @id     
+                               
   
   def initialize(options)
     @name = options["name"]
@@ -37,20 +48,11 @@ class Location
     @id = options["id"]
   end
   
-  def self.select_all_locations
-    DATABASE.execute("SELECT * FROM locations")
-  end
   
-  #SAVES CHANGES TO ROW -- can use some of save method to more fully automate insert method
-  def save
-  end
-  
-  #CREATES NEW ROW
   def insert
     DATABASE.execute("INSERT INTO locations (name, description) VALUES ('#{@name}', '#{@description}')")
     @id = DATABASE.last_insert_row_id
   end
-  
   
   
 end

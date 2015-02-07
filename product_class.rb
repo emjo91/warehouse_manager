@@ -1,77 +1,70 @@
 require_relative "module.rb"
+require_relative 'class_module.rb'
 
 # Class: Product
 #
 # Creates different products and gets information about them.
 #
 # Attributes:
-# @name          - 
-# @id            - 
-# @quantity      - 
-# @description   - 
-# @serial_number - 
+# @name          - String: Name of product
+# @id            - Integer: Product ID, primary key for products table
+# @quantity      - Integer: Number of products in inventory
+# @description   - String: Description of product (duh)
+# @serial_number - Integer: Unique identifier for particular product
+# @cost          - Integer: Number of cents product costs
 #
 # attr_reader :id
+# attr_accessor :serial_num, :description, :quantity, :name
 #
 # Public Methods:
-# #insert
-# #self.select_all_products
-# #
-# #update_product_name
-# #update_quantity
 # #move_self_between_locations -- instance method
 # #select_all_products_for_location
-# #update_serial_number
-# #update_description
-# #select_product
-# #select_all_products
-# #delete_product
 # #return_category
 # #return_location
-# #
+# 
 # Private Methods:
 # #initialize
 
 class Product
-  include WarehouseManager
-  # CREATE ACTIVE/INACTIVE AS A FIELD IN PRODUCTS, LOCATIONS, CATEGORIES? WOULD HAVE TO UPDATE SELF.ALL METHODS TO ONLY SHOW ACTIVE (AND ONLY SHOW INACTIVE) AS WELL AS INSERT AND SAVE. 
+  include WarehouseManagerIM
+  extend WarehouseManagerCM
+
   
   attr_reader :id
-  attr_writer :serial_num, :description, :quantity, :name
-  
+  attr_accessor :serial_num, :description, :quantity, :name, :cost
+
+  # Private: initialize
+  # Starts and then plays the game with the provided players.
+  #
+  # Parameters:
+  # options - Hash
+  #           - @name        - Instance variable representing the product name
+  #           - @quantity    - Instance variable representing the product amount
+  #           - @description - Instance variable representing the product info 
+  #           - @serial_num  - Instance variable representing the product serial number
+  #           - @id          - Instance variable representing the product ID within the table (primary key)
+  #           - @cost        - Instance variable representing cost of product in cents
+  #
+  # Returns:
+  # Nil
+  #
+  # State Changes:
+  # Sets instance variables @name, @quantity, @description, @serial_num, @id     
+                               
   def initialize(options)
     @name = options["name"]
     @quantity = options["quantity"]
     @description = options["description"]
     @serial_num = options["serial_num"]
     @id = options["id"]
+    @cost = options["cost"]
   end
   
   
-  # Public: .where_value_for_field_in_table_is ---> add to module (because mostly automated for different tables?)
-  # Get a list of details from specific field with specific value for specific table
-  # 
-  # Parameters:
-  # product-name - String: Name searching for
-  #
-  # Returns:
-  # An array of Product objects
-  
-  
-  
-  
-  
-  def self.find(record_id)
-  end
-  
-  def self.select_all_products
-    DATABASE.execute("SELECT * FROM products")
-  end
-  
-  #CREATES NEW ROW
   def insert
-    DATABASE.execute("INSERT INTO products (name, description, quantity, serial_num) VALUES ('#{@name}', '#{@description}', #{@quantity}, #{@serial_num})")
+    DATABASE.execute("INSERT INTO products (name, description, quantity, serial_num, cost) VALUES ('#{@name}', '#{@description}', #{@quantity}, #{@serial_num}, #{@cost})")
     @id = DATABASE.last_insert_row_id
   end
+
     
 end
