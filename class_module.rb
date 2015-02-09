@@ -81,11 +81,15 @@ module WarehouseManagerCM
     value_array = []
         
     if @id_array.length > 1
-      delete_secondary_kvpairs(@id_array, :hashes)
-        :hashes.each do |key, value|
+      @id_array.each do |placeholder|
+        placeholder.delete_if do |key, value|
+          key.is_a?(Integer)
+        end
+        placeholder.each do |key, value|
           value_array << value
           @record_id = value_array
         end
+      end
     else
       @record_id = @id_array[0][0].to_s
     end
@@ -244,35 +248,43 @@ module WarehouseManagerCM
   # State changes:
   # Sets @temp_cateory_id name and category_id
 
-  def return_category(record_id=nil)
-    
-    if record_id == nil# if no option is included for record_id in hash 
-      record_id = @record_id
-    end
-  
-    category_id_array = DATABASE.execute("SELECT category_id FROM products WHERE id = #{record_id}") #==> [{"category_id"=>1, 0=>1}]
+  def return_category_id(record_id=nil)
+   
+     if record_id == nil# if no option is included for record_id in hash 
+       record_id = @record_id
+     end
+ 
+     category_id_array = DATABASE.execute("SELECT category_id FROM products WHERE id = #{record_id}") #==> [{"category_id"=>1, 0=>1}]
 
-    delete_secondary_kvpairs(category_id_array, :placeholder)
+     delete_secondary_kvpairs(category_id_array, :placeholder)
 
-    category_id_hash = category_id_array[0]
+     category_id_hash = category_id_array[0]
 
-    category_id_hash.each do |x, y|
-      @temp_category_id = y
-    end
+     category_id_hash.each do |x, y|
+       @temp_category_id = y
+     end
+     return @temp_category_id
+   end
+ 
+   def return_category_name(category_id=nil)
+   
+     if category_id == nil# if no option is included for record_id in hash 
+       category_id = @temp_category_id
+     end
 
-    category_name_array = DATABASE.execute("SELECT name FROM categories WHERE id = #{@temp_category_id}") #==> [{"name"=>"board games", 0=>"board games"}]
-    delete_secondary_kvpairs(category_name_array, :placeholder)
-    category_name_hash = category_name_array[0]
+     category_name_array = DATABASE.execute("SELECT name FROM categories WHERE id = #{@temp_category_id}") #==> [{"name"=>"board games", 0=>"board games"}]
+     delete_secondary_kvpairs(category_name_array, :placeholder)
+     category_name_hash = category_name_array[0]
 
-    category_name_hash.each do |x, y|
-      @temp_category_name = y
-      return @temp_category_name
-    end
-    
+     category_name_hash.each do |x, y|
+       @temp_category_name = y
+       return @temp_category_name
+     end
+   
 
-    return @temp_category_name
-    
-  end
+     return @temp_category_name
+   
+   end
   
 
   # Public: #return_location
@@ -288,7 +300,7 @@ module WarehouseManagerCM
   # State changes:
   # Sets @temp_location_id name and category_id
   
-  def return_location(record_id=nil)
+  def return_location_id(record_id=nil)
     
     if record_id == nil# if no option is included for record_id in hash 
       record_id = @record_id
@@ -303,7 +315,10 @@ module WarehouseManagerCM
     location_id_hash.each do |x, y|
       @temp_location_id = y
     end
-
+    return @temp_location_id
+  end
+  
+  def return_location_name(category_id=nil)
     location_name_array = DATABASE.execute("SELECT name FROM locations WHERE id = #{@temp_location_id}") #==> [{"name"=>"board games", 0=>"board games"}]
     delete_secondary_kvpairs(location_name_array, :placeholder)
     location_name_hash = location_name_array[0]
@@ -392,9 +407,31 @@ module WarehouseManagerCM
     else
       results = DATABASE.execute("SELECT * FROM #{table} WHERE id = #{record_id}")
     end
-    @better_results = delete_secondary_kvpairs(results, :hashes)
     
-    return @better_results #returns an array
+    @better_results2 = []
+
+    results.each do |hash|
+        hash.delete_if do |key, value|
+        key.is_a?(String)
+      end
+      hash.each do |key, value|
+        case
+        when key == 1
+          @better_results2 << ("ITEM: Name: " + value.to_s)
+        when key == 4
+          @better_results2 << ("Description: " + value.to_s)
+        when key == 3
+          @better_results2 << ("Cost: $" + sprintf("%.02f", (value * 0.01)).to_s)
+        when key == 2
+          @better_results2 << ("Quantity: " + value.to_s)
+        end
+        
+      end
+
+    end
+
+    return @better_results2.join("; ")
+    
   end
 
   # Public: #find_results_to_objects
