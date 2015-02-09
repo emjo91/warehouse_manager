@@ -22,7 +22,6 @@ DATABASE.execute("CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, n
                                                        FOREIGN KEY(location_id) REFERENCES locations(id))")
                                                        
 #-----This is our script----#
-
 puts "Hello, What would you like to do today?"
 puts "Press 1 for: Add or delete a product, or update its information (including category and location)"
 puts "Press 2 for: Retrieve product information"
@@ -129,8 +128,49 @@ elsif answer == 2
   j = Location.return_location_name(i)
   puts Product.find({"table"=>"products", "record_id"=>d}) + " Category: #{h}" + " Location: #{j}"
 
-# elsif answer == 3
-#
+elsif answer == 3
+  puts "What do you want to do with your location?"
+  puts "Press 1 to ADD a location"
+  puts "Press 2 to UPDATE a location"
+  puts "Press 3 to DELETE a location"
+  location1 = gets.chomp.to_i
+  until location1 >= 1  && location1 <= 3
+    puts "Sorry, that's not an option, try again."
+    puts "Press 1 to ADD a location"
+    puts "Press 2 to UPDATE a location"
+    puts "Press 3 to DELETE a location"
+  end
+  if location1 == 1
+    puts "Let's add a location!"
+    puts "Please enter name of location:"
+    name2 = gets.chomp
+    puts "Please enter a description of the location (no more than 1 or 2 short sentences):"
+    description2 = gets.chomp    
+    k = Location.new({"name"=>"#{name2}", "description"=>"#{description2}"}) 
+    k.insert   
+    puts "Location has been added! Goodbye!"
+  elsif location1 == 2
+    puts "Let's update a location!"
+    puts Location.return_all_location_names
+    puts "What is the name of the location you would like to update?"
+    location3 = gets.chomp
+    l = Location.find_record_id({"table"=>"locations", "field"=>"name", "value"=>"#{location3}"})
+    puts "What do you want to change the name to?"
+    name4 = gets.chomp
+    puts "What do you want to change the description to?"
+    description4 = gets.chomp
+    m = Location.new({"name"=>"#{name4}", "description"=>"#{description4}"}) 
+    m.save({"table"=>"locations", "item_id"=>l})  
+    puts "Location has been updated! Goodbye!"
+  elsif location1 == 3
+    puts Location.return_all_location_names
+    puts "What is the name of the location you would like to remove?"
+    location5 = gets.chomp
+    n = Location.find_record_id({"table"=>"locations", "field"=>"name", "value"=>"#{location5}"})
+    Location.delete_record({"table"=>"locations", "record_id"=>n})
+    puts "In the words of the Daleks, #{location5} has been EXTERMINATED. Goodbye!" 
+  end
+  
 elsif answer == 4
   puts "Let's find some products!"
   puts "What is the category name for which you would like to view all products?"
@@ -138,8 +178,6 @@ elsif answer == 4
   e = Category.find_record_id({"table"=>"categories", "field"=>"name", "value"=>category_name3})
   puts "#{category_name3} includes: " + Product.select_products_for_category(e)
   puts "Goodbye!"
-  
-  
 
 elsif answer == 5
   puts "Let's find some products!"
@@ -150,6 +188,7 @@ elsif answer == 5
   puts "Goodbye!"
 
 end
+
 
 
 

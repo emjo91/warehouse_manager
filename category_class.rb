@@ -24,7 +24,7 @@ class Category
   extend WarehouseManagerCM
 
   attr_reader :id
-  attr_accessor :description, :name, :product_id
+  attr_accessor :description, :name
   
   # Private: initialize
   # Starts and then plays the game with the provided players.
@@ -45,7 +45,6 @@ class Category
     @id = options["id"]
     @name = options["name"]
     @description = options["description"]
-    @product_id = options["product_id"]
   end
   
   

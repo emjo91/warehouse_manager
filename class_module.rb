@@ -285,6 +285,22 @@ module WarehouseManagerCM
      return @temp_category_name
    
    end
+   
+   def return_all_location_names
+     array = DATABASE.execute("SELECT name FROM locations")
+     @temp_location_name = []
+     
+     array.each do |placeholder|
+       placeholder.delete_if do |key, value|
+         key.is_a?(Integer)
+       end
+       placeholder.each do |x, y|
+       @temp_location_name << y
+       end
+     end
+
+     return @temp_location_name.join(", ")
+   end
   
 
   # Public: #return_location
