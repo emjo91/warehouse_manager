@@ -1,3 +1,6 @@
+require 'gemfile'
+require 'bundler/setup'
+
 require 'pry' 
 require 'sqlite3' 
 require_relative 'module.rb'
